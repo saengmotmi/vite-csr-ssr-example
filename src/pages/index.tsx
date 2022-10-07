@@ -1,7 +1,8 @@
 import { useRouter } from "../libs/Router";
 
-const Root = () => {
+const Root = (props: any) => {
   const { push } = useRouter();
+  console.log({ props });
 
   return (
     <div style={{ textAlign: "center" }}>

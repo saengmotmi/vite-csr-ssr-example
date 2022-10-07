@@ -22,11 +22,17 @@ const routes = Object.keys(pages).map((path) => {
 
 const container = document.getElementById("root") as HTMLElement;
 
+const initialData = (window as any).__INITIAL_DATA__;
+
 ReactDOM.hydrateRoot(
   container,
   <Router>
     {routes.map(({ path, component: Component }) => (
-      <Route key={path} path={path} component={<Component />} />
+      <Route
+        key={path}
+        path={path}
+        component={<Component state={initialData} />}
+      />
     ))}
   </Router>
 );

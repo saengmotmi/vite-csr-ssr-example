@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "server": "NODE_OPTIONS='--experimental-specifier-resolution=node' nodemon --watch \"./\" --exec \"ts-node\" server.tsx"
+    "server": "yarn build && NODE_OPTIONS='--experimental-specifier-resolution=node' nodemon --watch \"./\" --exec \"ts-node\" server.tsx"
   },
   "dependencies": {
     "@types/node": "^18.7.15",

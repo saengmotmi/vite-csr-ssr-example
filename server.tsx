@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// 새로고침 하면 cache 날아감
+// 서버 재시작하면 cache 날아감
 const cache: { [path: string]: string } = {};
 
 app.use("/assets", express.static("dist/assets"));
@@ -31,11 +31,14 @@ app.get("*", (req, res) => {
 
   if (isSSR && !cachedHTML) {
     const result = ReactDOM.renderToString(<About />);
+    const initialData = { name: "ssr" };
 
-    indexHTML = indexHTML.replace(
-      '<div id="root"></div>', // replace the placeholder
-      `<div id="root">${result}</div>` // replace with the actual content
-    );
+    indexHTML = indexHTML
+      .replace(
+        '<div id="root"></div>', // replace the placeholder
+        `<div id="root">${result}</div>` // replace with the actual content
+      )
+      .replace("__DATA_FROM_SERVER__", JSON.stringify(initialData)); // head script에 server 측 주입
     cache[currentPath] = indexHTML;
   }
   if (cachedHTML) {
@@ -46,5 +49,5 @@ app.get("*", (req, res) => {
 });
 
 app.listen(5500, () => {
-  console.log("Server started on port 5500");
+  console.log("Server started on http://localhost:5500");
 });
