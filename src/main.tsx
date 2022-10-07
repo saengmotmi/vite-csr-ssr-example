@@ -1,17 +1,32 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-import { Router, Route } from "./Router";
-import About from "./pages/about";
-import Root from "./pages/root";
-
+import { Router, Route } from "./libs/Router";
 import "./index.css";
+
+const pages: Record<string, { default: React.ElementType }> = import.meta.glob(
+  "./pages/*.tsx",
+  {
+    eager: true,
+  }
+);
+
+const routes = Object.keys(pages).map((path) => {
+  const name = path.match(/\.\/pages\/(.*)\.tsx/)?.[1] ?? "";
+  return {
+    name,
+    path: `/${name === "index" ? "" : name}`,
+    component: pages[path].default,
+  };
+});
 
 const container = document.getElementById("root") as HTMLElement;
 
-ReactDOM.createRoot(container).render(
+ReactDOM.hydrateRoot(
+  container,
   <Router>
-    <Route path="/" component={<Root />} />
-    <Route path="/about" component={<About />} />
+    {routes.map(({ path, component: Component }) => (
+      <Route key={path} path={path} component={<Component />} />
+    ))}
   </Router>
 );

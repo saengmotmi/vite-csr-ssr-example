@@ -4,32 +4,44 @@ import express from "express";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
-import About from "../src/pages/About";
+
+import About from "./src/pages/about";
+import { getByteLengthByUTF8 } from "./src/utils";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// 새로고침 하면 cache 날아감
+const cache: { [path: string]: string } = {};
+
 app.use("/assets", express.static("dist/assets"));
 
 app.get("*", (req, res) => {
   let indexHTML = fs.readFileSync(
-    path.resolve(__dirname, "../dist/index.html"),
+    path.resolve(__dirname, "dist/index.html"),
     "utf8"
   );
+  const currentPath = req.path;
+  const cachedHTML = cache[currentPath];
 
   const ssrPaths = ["/about"];
-  const isSSR = ssrPaths.includes(req.path);
-  if (isSSR) {
+  const isSSR = ssrPaths.includes(currentPath);
+
+  if (isSSR && !cachedHTML) {
     const result = ReactDOM.renderToString(<About />);
 
     indexHTML = indexHTML.replace(
       '<div id="root"></div>', // replace the placeholder
       `<div id="root">${result}</div>` // replace with the actual content
     );
+    cache[currentPath] = indexHTML;
   }
-
+  if (cachedHTML) {
+    console.log({ length: getByteLengthByUTF8(cachedHTML) });
+    return res.status(200).send(cachedHTML);
+  }
   return res.status(200).send(indexHTML);
 });
 

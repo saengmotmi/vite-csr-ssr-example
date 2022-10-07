@@ -1,14 +1,14 @@
 import { useRouter } from "../libs/Router";
 
-const About = () => {
+const Root = () => {
   const { push } = useRouter();
 
   return (
     <div style={{ textAlign: "center" }}>
-      <h2>about</h2>
-      <button onClick={() => push("/")}>go main</button>
+      <h2>root</h2>
+      <button onClick={() => push("/about")}>about</button>
     </div>
   );
 };
 
-export default About;
+export default Root;
