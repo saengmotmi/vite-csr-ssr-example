@@ -18,7 +18,7 @@ const cache: { [path: string]: string } = {};
 
 app.use("/assets", express.static("dist/assets"));
 
-app.get("*", (req, res) => {
+app.get("*", async (req, res) => {
   let indexHTML = fs.readFileSync(
     path.resolve(__dirname, "dist/index.html"),
     "utf8"
@@ -32,13 +32,14 @@ app.get("*", (req, res) => {
   if (isSSR && !cachedHTML) {
     const result = ReactDOM.renderToString(<About />);
     const initialData = { name: "ssr" };
+    const preRenderedProps = await About.getInitialProps(initialData);
 
     indexHTML = indexHTML
       .replace(
         '<div id="root"></div>', // replace the placeholder
         `<div id="root">${result}</div>` // replace with the actual content
       )
-      .replace("__DATA_FROM_SERVER__", JSON.stringify(initialData)); // head script에 server 측 주입
+      .replace("__DATA_FROM_SERVER__", JSON.stringify(preRenderedProps)); // head script에 server 측 주입
     cache[currentPath] = indexHTML;
   }
   if (cachedHTML) {

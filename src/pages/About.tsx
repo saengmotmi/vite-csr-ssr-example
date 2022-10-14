@@ -20,3 +20,8 @@ const About = (props: any) => {
 };
 
 export default About;
+
+About.getInitialProps = async (data: any) => {
+  data.hi = "ssr data";
+  return data;
+};
