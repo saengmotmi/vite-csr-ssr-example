@@ -1,8 +1,11 @@
-import React from "react";
+import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
 
 import { Router, Route } from "./libs/Router";
 import "./index.css";
+
+// import About from "./pages/about";
+const About = React.lazy(() => import("./pages/about"));
 
 const pages: Record<string, { default: React.ElementType }> = import.meta.glob(
   "./pages/*.tsx",
@@ -27,12 +30,17 @@ const initialData = (window as any).__INITIAL_DATA__;
 ReactDOM.hydrateRoot(
   container,
   <Router>
-    {routes.map(({ path, component: Component }) => (
-      <Route
-        key={path}
-        path={path}
-        component={<Component state={initialData} />}
-      />
-    ))}
+    <Suspense fallback={<div>Loading...</div>}>
+      <About />
+    </Suspense>
+    {/* {routes.map(({ path, component: Component }) => (
+      <Suspense fallback={<div>Loading...</div>}>
+        <Route
+          key={path}
+          path={path}
+          component={<Component state={initialData} />}
+        />
+      </Suspense>
+    ))} */}
   </Router>
 );
